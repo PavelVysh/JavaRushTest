@@ -27,7 +27,7 @@ public class RestApiController {
                                        @RequestParam(defaultValue = "0",required = false) Integer minLevel,
                                        @RequestParam(defaultValue = "10000",required = false) Integer maxLevel,
                                        @RequestParam(defaultValue = "0") Integer pageNumber,
-                                       @RequestParam(defaultValue = "40") Integer pageSize) {
+                                       @RequestParam(defaultValue = "3") Integer pageSize) {
 
         return playerService.getPlayersList(name,title,minLevel,maxLevel,pageNumber,pageSize);
     }
