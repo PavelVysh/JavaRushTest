@@ -8,4 +8,6 @@ public enum Race {
     ORC,
     TROLL,
     HOBBIT
+
+
 }
