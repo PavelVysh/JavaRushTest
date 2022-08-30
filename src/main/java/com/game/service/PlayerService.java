@@ -4,17 +4,18 @@ import com.game.entity.Player;
 
 import com.game.entity.Race;
 import com.game.repository.PlayerRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlayerService {
-
-    private int lastCount;
 
     private final PlayerRepository playerRepository;
     @PersistenceContext
@@ -59,16 +60,28 @@ public class PlayerService {
 
         Query query = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
 
-        Query queryForSize = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
-
-        lastCount = queryForSize.getResultList().size();
-
-        return query.setFirstResult(pageSize*(pageNumber)).setMaxResults(pageSize).getResultList();
+        return query.setFirstResult(pageSize*pageNumber).setMaxResults(pageSize).getResultList();
     }
 
-    public Integer getPlayersCount() {
+    public Integer getPlayersCount(String name,
+                                   String title, Integer minLevel,Integer maxLevel,
+                                   Integer pageNumber, Integer pageSize, Race race) {
 
-        return lastCount;
+        Query query = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
+
+        return query.getResultList().size();
     }
 
+    public Player getPlayerById(Long id) {
+
+        if(id <= 0 ) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid id: "+id);
+
+        Optional<Player> player = playerRepository.findById(id);
+
+        if (player.isPresent()) {
+            return player.get();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player with id: " + id);
+        }
+    }
 }

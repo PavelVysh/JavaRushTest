@@ -33,7 +33,18 @@ public class RestApiController {
         return playerService.getPlayersList(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
     }
     @GetMapping("/players/count")
-    public Integer getPlayersCount() {
-        return playerService.getPlayersCount();
+    public Integer getPlayersCount(@RequestParam(defaultValue = "%",required = false) String name,
+                                   @RequestParam(defaultValue = "%",required = false) String title,
+                                   @RequestParam(defaultValue = "0",required = false) Integer minLevel,
+                                   @RequestParam(defaultValue = "10000",required = false) Integer maxLevel,
+                                   @RequestParam(defaultValue = "0") Integer pageNumber,
+                                   @RequestParam(defaultValue = "3") Integer pageSize,
+                                   @RequestParam(required = false) Race race) {
+        return playerService.getPlayersCount(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
+    }
+    @GetMapping("/players/{id}")
+    public Player getPlayerById(@PathVariable Long id) {
+
+       return playerService.getPlayerById(id);
     }
 }
