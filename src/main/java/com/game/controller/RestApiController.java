@@ -25,9 +25,11 @@ public class RestApiController {
     public List<Player> getPlayersList(@RequestParam(defaultValue = "%",required = false) String name,
                                        @RequestParam(defaultValue = "%",required = false) String title,
                                        @RequestParam(defaultValue = "0",required = false) Integer minLevel,
-                                       @RequestParam(defaultValue = "10000",required = false) Integer maxLevel) {
+                                       @RequestParam(defaultValue = "10000",required = false) Integer maxLevel,
+                                       @RequestParam(defaultValue = "0") Integer pageNumber,
+                                       @RequestParam(defaultValue = "40") Integer pageSize) {
 
-        return playerService.getPlayersList(name,title,minLevel,maxLevel);
+        return playerService.getPlayersList(name,title,minLevel,maxLevel,pageNumber,pageSize);
     }
     @GetMapping("/players/count")
     public Integer getPlayersCount() {

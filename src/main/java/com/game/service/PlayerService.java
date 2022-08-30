@@ -5,6 +5,8 @@ import com.game.entity.Player;
 import com.game.entity.Race;
 import com.game.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,22 +34,21 @@ public class PlayerService {
 
 
     public List<Player> getPlayersList(String name,
-                                       String title, Integer minLevel,Integer maxLevel) {
+                                       String title, Integer minLevel,Integer maxLevel,
+                                        Integer pageNumber, Integer pageSize) {
 
         Query query = entityManager.createQuery("Select p From Player p WHERE p.name LIKE :name " +
                                                         "AND p.title LIKE :title AND p.level BETWEEN :minLevel " +
-                                 "AND :maxLevel");
+                                                        "AND :maxLevel");
 
             query.setParameter("name","%"+name+"%");
             query.setParameter("title", "%"+title+"%");
             query.setParameter("minLevel",minLevel);
             query.setParameter("maxLevel",maxLevel);
 
-            List<Player> players= query.getResultList();
 
-            lastCount = players.size();
 
-        return players;
+        return query.setFirstResult(pageSize*(pageNumber)).setMaxResults(pageSize).getResultList();
     }
 
     public Integer getPlayersCount() {
