@@ -31,27 +31,39 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
+    public Query makeAQuery (String name,
+                             String title, Integer minLevel,Integer maxLevel,
+                             Integer pageNumber, Integer pageSize) {
+
+        Query query = entityManager.createQuery( "Select p From Player p WHERE p.name LIKE :name " +
+                                                        "AND p.title LIKE :title " +
+                                                        "AND p.level BETWEEN :minLevel AND :maxLevel");
+
+        query.setParameter("name","%"+name+"%");
+        query.setParameter("title", "%"+title+"%");
+        query.setParameter("minLevel",minLevel);
+        query.setParameter("maxLevel",maxLevel);
+
+        return query;
+    }
+
 
 
     public List<Player> getPlayersList(String name,
                                        String title, Integer minLevel,Integer maxLevel,
                                         Integer pageNumber, Integer pageSize) {
 
-        Query query = entityManager.createQuery("Select p From Player p WHERE p.name LIKE :name " +
-                                                        "AND p.title LIKE :title AND p.level BETWEEN :minLevel " +
-                                                        "AND :maxLevel");
+        Query query = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize);
 
-            query.setParameter("name","%"+name+"%");
-            query.setParameter("title", "%"+title+"%");
-            query.setParameter("minLevel",minLevel);
-            query.setParameter("maxLevel",maxLevel);
+        Query queryForSize = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize);
 
-
+        lastCount = queryForSize.getResultList().size();
 
         return query.setFirstResult(pageSize*(pageNumber)).setMaxResults(pageSize).getResultList();
     }
 
     public Integer getPlayersCount() {
+
         return lastCount;
     }
 
