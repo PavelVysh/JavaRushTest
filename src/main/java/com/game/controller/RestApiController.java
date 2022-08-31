@@ -1,6 +1,7 @@
 package com.game.controller;
 
 import com.game.entity.Player;
+import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.service.PlayerService;
 
@@ -31,11 +32,12 @@ public class RestApiController {
                                        @RequestParam(required = false) Race race,
                                        @RequestParam(defaultValue = "0",required = false) Integer minExperience,
                                        @RequestParam(defaultValue = "2000000000",required = false) Integer maxExperience,
-                                       @RequestParam(defaultValue = "false",required = false) Boolean banned
+                                       @RequestParam(required = false) Boolean banned,
+                                       @RequestParam(required = false) Profession profession
                                        ) {
 
         return playerService.getPlayersList(name,title,minLevel,maxLevel,
-                pageNumber,pageSize,race,minExperience,maxExperience,banned);
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession);
     }
     @GetMapping("/players/count")
     public Integer getPlayersCount(@RequestParam(defaultValue = "%",required = false) String name,
@@ -47,10 +49,11 @@ public class RestApiController {
                                    @RequestParam(required = false) Race race,
                                    @RequestParam(defaultValue = "0",required = false) Integer minExperience,
                                    @RequestParam(defaultValue = "2000000000",required = false) Integer maxExperience,
-                                   @RequestParam(required = false) Boolean banned) {
+                                   @RequestParam(required = false) Boolean banned,
+                                   @RequestParam(required = false) Profession profession) {
 
         return playerService.getPlayersCount(name,title,minLevel,maxLevel,
-                pageNumber,pageSize,race,minExperience,maxExperience,banned);
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession);
     }
     @GetMapping("/players/{id}")
     public Player getPlayerById(@PathVariable Long id) {

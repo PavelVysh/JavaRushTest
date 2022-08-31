@@ -2,6 +2,7 @@ package com.game.service;
 
 import com.game.entity.Player;
 
+import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.repository.PlayerRepository;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,8 @@ public class PlayerService {
     public Query makeAQuery (String name,
                              String title, Integer minLevel,Integer maxLevel,
                              Integer pageNumber, Integer pageSize,Race race,
-                             Integer minExperience, Integer maxExperience,Boolean banned) {
+                             Integer minExperience, Integer maxExperience,Boolean banned,
+                             Profession profession) {
 
         StringBuilder sbUrl = new StringBuilder("Select p From Player p WHERE p.name LIKE :name " +
                 "AND p.title LIKE :title " +
@@ -39,6 +41,7 @@ public class PlayerService {
 
         if(race != null)sbUrl.append("AND p.race = :race ");
         if(banned != null)sbUrl.append("AND p.banned = :banned ");
+        if(profession != null)sbUrl.append("AND p.profession = :profession");
 
         Query query = entityManager.createQuery(sbUrl.toString());
 
@@ -51,6 +54,7 @@ public class PlayerService {
 
         if(race != null) query.setParameter("race", race);
         if(banned != null) query.setParameter("banned",banned);
+        if(profession != null) query.setParameter("profession",profession);
 
         return query;
     }
@@ -58,11 +62,12 @@ public class PlayerService {
 
 
     public List<Player> getPlayersList(String name,
-                                       String title, Integer minLevel,Integer maxLevel,
-                                        Integer pageNumber, Integer pageSize, Race race, Integer minExperience,
-                                       Integer maxExperience, Boolean banned) {
+                                       String title, Integer minLevel, Integer maxLevel,
+                                       Integer pageNumber, Integer pageSize, Race race, Integer minExperience,
+                                       Integer maxExperience, Boolean banned, Profession profession) {
 
-        Query query = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize,race,minExperience,maxExperience,banned);
+        Query query = makeAQuery(name,title,minLevel,maxLevel,
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession);
 
         return query.setFirstResult(pageSize*pageNumber).setMaxResults(pageSize).getResultList();
     }
@@ -70,9 +75,10 @@ public class PlayerService {
     public Integer getPlayersCount(String name,
                                    String title, Integer minLevel,Integer maxLevel,
                                    Integer pageNumber, Integer pageSize, Race race, Integer minExperience,
-                                   Integer maxExperience, Boolean banned) {
+                                   Integer maxExperience, Boolean banned, Profession profession) {
 
-        Query query = makeAQuery(name,title,minLevel,maxLevel,pageNumber,pageSize,race,minExperience,maxExperience,banned);
+        Query query = makeAQuery(name,title,minLevel,maxLevel,
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession);
 
         return query.getResultList().size();
     }
