@@ -28,9 +28,14 @@ public class RestApiController {
                                        @RequestParam(defaultValue = "10000",required = false) Integer maxLevel,
                                        @RequestParam(defaultValue = "0") Integer pageNumber,
                                        @RequestParam(defaultValue = "3") Integer pageSize,
-                                       @RequestParam(required = false) Race race) {
+                                       @RequestParam(required = false) Race race,
+                                       @RequestParam(defaultValue = "0",required = false) Integer minExperience,
+                                       @RequestParam(defaultValue = "2000000000",required = false) Integer maxExperience,
+                                       @RequestParam(defaultValue = "false",required = false) Boolean banned
+                                       ) {
 
-        return playerService.getPlayersList(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
+        return playerService.getPlayersList(name,title,minLevel,maxLevel,
+                pageNumber,pageSize,race,minExperience,maxExperience,banned);
     }
     @GetMapping("/players/count")
     public Integer getPlayersCount(@RequestParam(defaultValue = "%",required = false) String name,
@@ -39,8 +44,13 @@ public class RestApiController {
                                    @RequestParam(defaultValue = "10000",required = false) Integer maxLevel,
                                    @RequestParam(defaultValue = "0") Integer pageNumber,
                                    @RequestParam(defaultValue = "3") Integer pageSize,
-                                   @RequestParam(required = false) Race race) {
-        return playerService.getPlayersCount(name,title,minLevel,maxLevel,pageNumber,pageSize,race);
+                                   @RequestParam(required = false) Race race,
+                                   @RequestParam(defaultValue = "0",required = false) Integer minExperience,
+                                   @RequestParam(defaultValue = "2000000000",required = false) Integer maxExperience,
+                                   @RequestParam(required = false) Boolean banned) {
+
+        return playerService.getPlayersCount(name,title,minLevel,maxLevel,
+                pageNumber,pageSize,race,minExperience,maxExperience,banned);
     }
     @GetMapping("/players/{id}")
     public Player getPlayerById(@PathVariable Long id) {
