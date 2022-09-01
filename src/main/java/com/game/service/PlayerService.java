@@ -146,41 +146,67 @@ public class PlayerService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player with id: " + id);
         }
     }
-
-/*
+    /*
+    @Transactional
     public Player updatePlayer(Long id, Player player) {
 
-
-
-        Query testQuert = entityManager.createQuery("update Player p set p.name = 'Demochange' where p.id = 42");
-        testQuert.executeUpdate();
-
-
-        System.out.println("Player received : " + player.getName());
+        Session session = entityManager.unwrap(Session.class);
 
         StringBuilder builder = new StringBuilder();
-        builder.append("UPDATE Player p SET ");
-
+        builder.append("UPDATE Player p SET  ");
+        if(player.getName() == null && player.getTitle() == null &&
+                player.getRace() == null && player.getProfession() == null
+                && player.getBirthday() == null && player.getExperience() == null){
+            return getPlayerById(id);
+        }
         if (player.getName() != null) builder.append("p.name=:name, ");
         if (player.getTitle() != null) builder.append("p.title=:title, ");
+        if (player.getRace() != null) builder.append("p.race=:race, ");
+        if (player.getProfession() != null) builder.append("p.profession=:profession, ");
+        if (player.getBirthday() != null) {
+            if (player.getBirthday().before(new Date(0L))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Birthday time incorrect");
+            } else {
+                builder.append("p.birthday=:birthday, ");
+            }
+        }
+        builder.append("p.banned=:banned, ");
+        if (player.getExperience() != null) {
+            if (player.getExperience() < 0 || player.getExperience() > 1000000) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Exp out of bounds" + player.getExperience());
+            } else {
+                builder.append("p.experience=:experience, ");
+                builder.append("p.level=:level, ");
+                builder.append("p.untilNextLevel=:untilNextLevel, ");
+
+            }
+        }
 
         builder.setLength(builder.length() - 2);
+        builder.append(" WHERE p.id=:id");
 
-        builder.append(" WHERE p.id=:id;");
-
-        Query query = entityManager.createQuery(builder.toString());
-
-        query.setParameter("name", player.getName());
-        query.setParameter("title", player.getTitle());
+        Query query = session.createQuery(builder.toString());
         query.setParameter("id", id);
-
-
+        if (player.getName() != null) query.setParameter("name", player.getName());
+        if (player.getTitle() != null) query.setParameter("title", player.getTitle());
+        if (player.getRace() != null) query.setParameter("race", player.getRace());
+        if (player.getProfession() != null) query.setParameter("profession",player.getProfession());
+        if (player.getBirthday() != null) query.setParameter("birthday", player.getBirthday());
+        query.setParameter("banned", player.isBanned());
+        if(player.getExperience() != null) {
+            query.setParameter("experience", player.getExperience());
+            int level = ((int) ((Math.sqrt(2500 + (200 * player.getExperience())) - 50) / 100));
+            query.setParameter("level", level);
+            query.setParameter("untilNextLevel", 50 * (level + 1) * (level + 2) - player.getExperience());
+        }
         query.executeUpdate();
 
         return getPlayerById(id);
     }
 }
 */
+
+
     @Transactional
     public Player updatePlayer(Long id, Player player) {
 
@@ -208,7 +234,7 @@ public class PlayerService {
                     playerFromDB.setUntilNextLevel(50 * (playerFromDB.getLevel() + 1) * (playerFromDB.getLevel() + 2) - playerFromDB.getExperience());
                 }
             }
-
+            playerFromDB.setBanned(player.isBanned());
             session.saveOrUpdate(playerFromDB);
 
             return playerFromDB;
