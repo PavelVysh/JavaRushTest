@@ -6,10 +6,12 @@ import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.repository.PlayerRepository;
+import org.hibernate.Session;
 import org.hibernate.cfg.QuerySecondPass;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityManager;
@@ -179,9 +181,10 @@ public class PlayerService {
     }
 }
 */
-
+    @Transactional
     public Player updatePlayer(Long id, Player player) {
 
+        Session session = entityManager.unwrap(Session.class);
         Player playerFromDB = getPlayerById(id);
 
 
@@ -205,7 +208,8 @@ public class PlayerService {
                     playerFromDB.setUntilNextLevel(50 * (playerFromDB.getLevel() + 1) * (playerFromDB.getLevel() + 2) - playerFromDB.getExperience());
                 }
             }
-            playerRepository.save(playerFromDB);
+
+            session.saveOrUpdate(playerFromDB);
 
             return playerFromDB;
         }
