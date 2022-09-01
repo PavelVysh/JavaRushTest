@@ -204,8 +204,8 @@ public class PlayerService {
         return getPlayerById(id);
     }
 }
-*/
 
+*/
 
     @Transactional
     public Player updatePlayer(Long id, Player player) {
@@ -234,7 +234,11 @@ public class PlayerService {
                     playerFromDB.setUntilNextLevel(50 * (playerFromDB.getLevel() + 1) * (playerFromDB.getLevel() + 2) - playerFromDB.getExperience());
                 }
             }
+        try {
             playerFromDB.setBanned(player.isBanned());
+        } catch (NullPointerException ignored) {
+
+        }
             session.saveOrUpdate(playerFromDB);
 
             return playerFromDB;
