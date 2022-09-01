@@ -2,10 +2,13 @@ package com.game.entity;
 
 
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@DynamicUpdate
 @Table(name="player")
 public class Player {
 
@@ -32,7 +35,7 @@ public class Player {
     @Column(name="birthday")
     private Date birthday;
     @Column(name="banned")
-    private boolean banned;
+    private Boolean banned;
 
     public Player() {
     }
@@ -114,7 +117,23 @@ public class Player {
         return banned;
     }
 
-    public void setBanned(boolean banned) {
+    public void setBanned(Boolean banned) {
         this.banned = banned;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", title='" + title + '\'' +
+                ", race=" + race +
+                ", profession=" + profession +
+                ", experience=" + experience +
+                ", level=" + level +
+                ", untilNextLevel=" + untilNextLevel +
+                ", birthday=" + birthday +
+                ", banned=" + banned +
+                '}';
     }
 }

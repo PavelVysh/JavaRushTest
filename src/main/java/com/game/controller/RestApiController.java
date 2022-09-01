@@ -74,4 +74,11 @@ public class RestApiController {
     public void deletePlayer(@PathVariable Long id) {
         playerService.deletePlayer(id);
     }
+    @PostMapping("/players/{id}")
+    public Player updatePlayer(@PathVariable Long id,@RequestBody Player player) {
+
+
+        return playerService.updatePlayer(id,player);
+
+    }
 }
