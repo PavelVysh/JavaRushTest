@@ -70,4 +70,8 @@ public class RestApiController {
     public Player createPlayer(@RequestBody Player player) {
         return playerService.createPlayer(player);
     }
+    @DeleteMapping("/players/{id}")
+    public void deletePlayer(@PathVariable Long id) {
+        playerService.deletePlayer(id);
+    }
 }

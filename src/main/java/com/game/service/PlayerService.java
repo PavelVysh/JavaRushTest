@@ -131,4 +131,17 @@ public class PlayerService {
 
         return player;
     }
+
+    public void deletePlayer(Long id) {
+
+        if(id <= 0 ) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid id: "+id);
+
+        Optional<Player> player = playerRepository.findById(id);
+
+        if (player.isPresent()) {
+            playerRepository.delete(player.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player with id: " + id);
+        }
+    }
 }
