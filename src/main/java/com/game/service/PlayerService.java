@@ -1,5 +1,6 @@
 package com.game.service;
 
+import com.game.controller.PlayerOrder;
 import com.game.entity.Player;
 
 import com.game.entity.Profession;
@@ -33,7 +34,7 @@ public class PlayerService {
                              String title, Integer minLevel,Integer maxLevel,
                              Integer pageNumber, Integer pageSize,Race race,
                              Integer minExperience, Integer maxExperience,Boolean banned,
-                             Profession profession, Long after, Long before) {
+                             Profession profession, Long after, Long before, PlayerOrder order) {
 
         StringBuilder sbUrl = new StringBuilder("Select p From Player p WHERE p.name LIKE :name " +
                 "AND p.title LIKE :title " +
@@ -44,7 +45,8 @@ public class PlayerService {
         if(banned != null)sbUrl.append("AND p.banned = :banned ");
         if(profession != null)sbUrl.append("AND p.profession = :profession ");
         if(after != null) sbUrl.append("AND p.birthday > :after ");
-        if(before != null) sbUrl.append("AND p.birthday < :before");
+        if(before != null) sbUrl.append("AND p.birthday < :before ");
+        if(order != null) sbUrl.append("ORDER BY p.").append(order.getFieldName());
 
         Query query = entityManager.createQuery(sbUrl.toString());
 
@@ -69,21 +71,23 @@ public class PlayerService {
     public List<Player> getPlayersList(String name,
                                        String title, Integer minLevel, Integer maxLevel,
                                        Integer pageNumber, Integer pageSize, Race race, Integer minExperience,
-                                       Integer maxExperience, Boolean banned, Profession profession, Long after,Long before) {
+                                       Integer maxExperience, Boolean banned, Profession profession,
+                                       Long after,Long before, PlayerOrder order) {
 
         Query query = makeAQuery(name,title,minLevel,maxLevel,
-                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before);
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before, order);
 
         return query.setFirstResult(pageSize*pageNumber).setMaxResults(pageSize).getResultList();
     }
 
     public Integer getPlayersCount(String name,
-                                   String title, Integer minLevel,Integer maxLevel,
+                                   String title, Integer minLevel, Integer maxLevel,
                                    Integer pageNumber, Integer pageSize, Race race, Integer minExperience,
-                                   Integer maxExperience, Boolean banned, Profession profession, Long after,Long before) {
+                                   Integer maxExperience, Boolean banned, Profession profession,
+                                   Long after, Long before, PlayerOrder order) {
 
         Query query = makeAQuery(name,title,minLevel,maxLevel,
-                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before);
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before,order);
 
         return query.getResultList().size();
     }
@@ -99,5 +103,32 @@ public class PlayerService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player with id: " + id);
         }
+
+    }
+
+    public Player createPlayer(Player player) {
+        if(player.getName() == null ||
+                player.getTitle() == null ||
+                player.getRace() == null ||
+                player.getProfession() == null ||
+                player.getBirthday() == null ||
+                player.getExperience() == null ||
+                player.getName().length() > 12 ||
+                player.getTitle().length() > 30 ||
+                player.getName().equals("") ||
+                player.getExperience() > 10000000 ||
+                player.getExperience() < 0 ||
+                player.getBirthday().before(new java.util.Date(946684800000L)) ||
+                player.getBirthday().after(new java.util.Date(32503680000000L)))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Some of stuff is wrong");
+
+
+        player.setLevel((int)((Math.sqrt(2500+(200*player.getExperience()))-50)/100));
+        player.setUntilNextLevel(50 * (player.getLevel() + 1) * (player.getLevel() + 2) - player.getExperience());
+
+
+        playerRepository.save(player);
+
+        return player;
     }
 }

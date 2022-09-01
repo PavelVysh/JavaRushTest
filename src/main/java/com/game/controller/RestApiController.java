@@ -35,11 +35,12 @@ public class RestApiController {
                                        @RequestParam(required = false) Boolean banned,
                                        @RequestParam(required = false) Profession profession,
                                        @RequestParam(required = false) Long after,
-                                       @RequestParam(required = false) Long before
+                                       @RequestParam(required = false) Long before,
+                                       @RequestParam(required = false) PlayerOrder order
                                        ) {
 
         return playerService.getPlayersList(name,title,minLevel,maxLevel,
-                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before);
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before,order);
     }
     @GetMapping("/players/count")
     public Integer getPlayersCount(@RequestParam(defaultValue = "%",required = false) String name,
@@ -50,18 +51,23 @@ public class RestApiController {
                                    @RequestParam(defaultValue = "3") Integer pageSize,
                                    @RequestParam(required = false) Race race,
                                    @RequestParam(defaultValue = "0",required = false) Integer minExperience,
-                                   @RequestParam(defaultValue = "2000000000",required = false) Integer maxExperience,
+                                   @RequestParam(defaultValue = "10000000",required = false) Integer maxExperience,
                                    @RequestParam(required = false) Boolean banned,
                                    @RequestParam(required = false) Profession profession,
                                    @RequestParam(required = false) Long after,
-                                   @RequestParam(required = false) Long before) {
+                                   @RequestParam(required = false) Long before,
+                                   @RequestParam(required = false) PlayerOrder order) {
 
         return playerService.getPlayersCount(name,title,minLevel,maxLevel,
-                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before);
+                pageNumber,pageSize,race,minExperience,maxExperience,banned,profession,after,before,order);
     }
     @GetMapping("/players/{id}")
     public Player getPlayerById(@PathVariable Long id) {
 
        return playerService.getPlayerById(id);
+    }
+    @PostMapping("/players")
+    public Player createPlayer(@RequestBody Player player) {
+        return playerService.createPlayer(player);
     }
 }
